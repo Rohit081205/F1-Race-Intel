@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Race Intel Engine | Live Commentary</title>
+    <link rel="stylesheet" href="dashboard/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Agency+FB:wght@700&family=Inter:wght@400;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Header -->
+        <header class="top-bar">
+            <div class="logo">
+                <span class="accent">F1</span> RACE INTEL
+            </div>
+            <div class="race-info">
+                <div class="info-item">
+                    <span class="label">LAP</span>
+                    <span id="lap-counter" class="value">0/0</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">PHASE</span>
+                    <span id="race-phase" class="value phase-badge">WAITING</span>
+                </div>
+            </div>
+            <div class="controls">
+                <button id="start-btn" class="btn btn-primary">START RACE</button>
+                <button id="next-lap-btn" class="btn btn-secondary" disabled>NEXT LAP</button>
+            </div>
+        </header>
+
+        <div class="dashboard-grid">
+            <!-- LEFT PANEL -->
+            <section class="panel glass left-panel">
+                <div class="panel-header">
+                    <h2>TELEMETRY DASHBOARD</h2>
+                </div>
+                
+                <div class="visuals">
+                    <div class="chart-container">
+                        <canvas id="gap-chart"></canvas>
+                    </div>
+                    
+                    <div class="hype-section">
+                        <div class="hype-header">
+                            <span class="label">HYPE INDEX</span>
+                            <span id="hype-value" class="hype-val">0</span>
+                        </div>
+                        <div class="hype-bar-bg">
+                            <div id="hype-fill" class="hype-bar-fill"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table id="driver-table">
+                        <thead>
+                            <tr>
+                                <th>POS</th>
+                                <th>DRIVER</th>
+                                <th>LAP TIME</th>
+                                <th>GAP</th>
+                                <th>TIRE</th>
+                                <th>AGE</th>
+                            </tr>
+                        </thead>
+                        <tbody id="driver-body">
+                            <!-- Drivers dynamicly injected here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- RIGHT PANEL -->
+            <section class="panel glass right-panel">
+                <div class="panel-header">
+                    <h2>LIVE COMMENTARY</h2>
+                </div>
+                
+                <div id="commentary-scroll" class="commentary-feed">
+                    <div class="commentary-item welcome">
+                        <p>Welcome to the Race Intelligence Engine. Click "Start Race" to begin telemetry replay.</p>
+                    </div>
+                </div>
+
+                <div class="event-section">
+                    <div class="panel-header sub">
+                        <h3>ANALYTICAL EVENT LOG</h3>
+                    </div>
+                    <div id="event-log" class="event-list">
+                        <!-- Events dynamicly injected here -->
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    <script src="dashboard/app.js"></script>
+</body>
+</html>

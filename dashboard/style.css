@@ -1,0 +1,318 @@
+:root {
+    --f1-red: #e10600;
+    --bg-dark: #0b0d0f;
+    --panel-bg: rgba(30, 34, 38, 0.7);
+    --text-main: #ffffff;
+    --text-dim: #949ca3;
+    --accent-blue: #00d2ff;
+    --accent-green: #00ff87;
+    --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-dark);
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(225, 6, 0, 0.1) 0, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(0, 210, 255, 0.05) 0, transparent 50%);
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.main-container {
+    padding: 1rem 2rem;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+/* Header */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 0;
+    border-bottom: 2px solid var(--f1-red);
+    margin-bottom: 2rem;
+}
+
+.logo {
+    font-family: 'Agency FB', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 2px;
+}
+
+.logo .accent {
+    color: var(--f1-red);
+}
+
+.race-info {
+    display: flex;
+    gap: 3rem;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.info-item .label {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 0.2rem;
+}
+
+.info-item .value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.phase-badge {
+    color: var(--accent-blue);
+    text-shadow: 0 0 10px rgba(0, 210, 255, 0.3);
+}
+
+.controls {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}
+
+.btn-primary {
+    background-color: var(--f1-red);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #ff0700;
+    box-shadow: 0 0 15px rgba(225, 6, 0, 0.4);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid var(--glass-border);
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+/* Grid & Panels */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 1.5rem;
+}
+
+.glass {
+    background: var(--panel-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+}
+
+.panel {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.panel-header h2 {
+    font-family: 'Agency FB', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--glass-border);
+    padding-bottom: 0.5rem;
+}
+
+/* Left Panel Content */
+.visuals {
+    display: grid;
+    grid-template-columns: 1fr 200px;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.chart-container {
+    height: 250px;
+}
+
+.hype-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.hype-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.5rem;
+}
+
+.hype-header .label {
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.hype-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--accent-green);
+    text-shadow: 0 0 20px rgba(0, 255, 135, 0.3);
+}
+
+.hype-bar-bg {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.hype-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent-green), var(--accent-blue));
+    transition: width 0.8s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+}
+
+/* Tables */
+.table-container {
+    flex-grow: 1;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    text-align: left;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    padding: 0.8rem 0.5rem;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+td {
+    padding: 1rem 0.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.driver-name {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+}
+
+/* Right Panel Content */
+.commentary-feed {
+    height: 350px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 1rem;
+    padding-right: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.commentary-feed::-webkit-scrollbar {
+    width: 4px;
+}
+
+.commentary-feed::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.commentary-feed::-webkit-scrollbar-thumb {
+    background: var(--glass-border);
+    border-radius: 10px;
+}
+
+.commentary-item {
+    padding: 1rem;
+    border-left: 3px solid var(--accent-blue);
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 0 8px 8px 0;
+    animation: slideIn 0.3s ease-out;
+}
+
+.commentary-item.welcome {
+    border-left-color: var(--text-dim);
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.event-section {
+    flex-grow: 1;
+}
+
+.panel-header.sub h3 {
+    font-size: 0.8rem;
+    color: var(--f1-red);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+}
+
+.event-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.event-card {
+    background: rgba(225, 6, 0, 0.05);
+    border: 1px solid rgba(225, 6, 0, 0.1);
+    padding: 0.8rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+}
+
+.event-type {
+    font-weight: 700;
+    color: var(--f1-red);
+    margin-right: 0.5rem;
+}
+
+.event-drivers {
+    color: var(--text-main);
+}

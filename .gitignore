@@ -1,0 +1,11 @@
+venv/
+__pycache__/
+*.pyc
+.cache/
+.env
+*.txt
+!requirements.txt
+event_analysis_output*.txt
+full_pipeline_output.txt
+hype_test_output.txt
+test_output.txt
