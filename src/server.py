@@ -113,7 +113,7 @@ def build_response(lap_data: Dict, race_state: RaceState, events: List[Dict], hy
 # --- API Endpoints ---
 
 @app.post("/api/race/start", response_model=RaceStateResponse)
-async def start_race(csv_path: str = "data/sample_race.csv"):
+async def start_race(csv_path: str = "data/real_race_silverstone_2023.csv"):
     """
     Initialize and start a new race simulation.
     """

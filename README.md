@@ -31,4 +31,4 @@ uvicorn src.server:app --reload --port 8000
 ## Usage
 1. Follow the **Environment Setup** instructions above.
 2. Open your browser to `http://localhost:8000`.
-3. Click "START RACE" to begin the simulation.
+3. Click "START RACE" to begin the simulation using the **2023 Silverstone GP** dataset.

@@ -145,12 +145,7 @@ class RaceReplay:
         """
         Compute delta metrics between current and previous lap.
         
-        Args:
-            current_drivers: List of LapData for current lap
-            previous_drivers: List of LapData for previous lap (or None)
-            
-        Returns:
-            Dictionary containing position changes, gap deltas, and lap time deltas
+        Handles real-world variability like DNFs, None positions, and variable grid sizes.
         """
         if previous_drivers is None:
             return {
@@ -169,30 +164,32 @@ class RaceReplay:
         gap_deltas = {}
         lap_time_deltas = {}
         
-        for driver in current_drivers:
+        # Sort current drivers by position (handling None) to ensure deterministic processing
+        sorted_current = sorted(current_drivers, key=lambda x: x.position if x.position is not None else 999)
+        
+        for driver in sorted_current:
             driver_name = driver.driver
             
-            # Position changes
+            # Position changes - only if both are present
             if driver_name in prev_positions:
                 prev_pos = prev_positions[driver_name]
                 curr_pos = driver.position
                 
-                if prev_pos > curr_pos:
-                    # Gained positions
-                    positions_gained = prev_pos - curr_pos
-                    position_changes.append(f"{driver_name} gained {positions_gained} position(s)")
-                elif prev_pos < curr_pos:
-                    # Lost positions
-                    positions_lost = curr_pos - prev_pos
-                    position_changes.append(f"{driver_name} lost {positions_lost} position(s)")
+                if prev_pos is not None and curr_pos is not None:
+                    if prev_pos > curr_pos:
+                        positions_gained = prev_pos - curr_pos
+                        position_changes.append(f"{driver_name} gained {positions_gained} position(s)")
+                    elif prev_pos < curr_pos:
+                        positions_lost = curr_pos - prev_pos
+                        position_changes.append(f"{driver_name} lost {positions_lost} position(s)")
             
             # Gap deltas (negative = gap closing, positive = gap increasing)
-            if driver_name in prev_gaps:
+            if driver_name in prev_gaps and driver.gap_ahead is not None and prev_gaps[driver_name] is not None:
                 gap_delta = driver.gap_ahead - prev_gaps[driver_name]
                 gap_deltas[driver_name] = round(gap_delta, 3)
             
             # Lap time deltas (negative = faster, positive = slower)
-            if driver_name in prev_lap_times:
+            if driver_name in prev_lap_times and driver.lap_time is not None and prev_lap_times[driver_name] is not None:
                 lap_time_delta = driver.lap_time - prev_lap_times[driver_name]
                 lap_time_deltas[driver_name] = round(lap_time_delta, 3)
         
