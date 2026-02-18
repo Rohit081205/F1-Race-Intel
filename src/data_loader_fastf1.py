@@ -2,19 +2,14 @@ import fastf1
 import pandas as pd
 import numpy as np
 from pathlib import Path
-import os
+import sys
 
-# Create data directory if it doesn't exist
+# Create directories
 Path("data").mkdir(exist_ok=True)
-# Enable cache
 Path("cache").mkdir(exist_ok=True)
 fastf1.Cache.enable_cache("cache")
 
 def get_track_status(status_code):
-    """
-    Map FastF1 TrackStatus codes to engine strings.
-    1 -> Green, 4 -> Safety, else -> Yellow
-    """
     if str(status_code) == '1':
         return "Green"
     elif str(status_code) == '4':
@@ -22,53 +17,37 @@ def get_track_status(status_code):
     else:
         return "Yellow"
 
-def load_real_race_data():
-    print("Loading 2023 Silverstone Race session...")
-    session = fastf1.get_session(2023, "Silverstone", "R")
-    session.load()
-    
+def extract_race(year, location, output_filename):
+    print(f"Loading {year} {location} Race session...")
+    try:
+        session = fastf1.get_session(year, location, 'R')
+        session.load()
+    except Exception as e:
+        print(f"Error loading session: {e}")
+        return
+
     laps = session.laps.copy()
-    
-    # Clean data
     laps = laps.dropna(subset=['LapTime'])
-    
-    # Compute cumulative race time per driver
-    print("Computing cumulative race times...")
     laps['LapTimeSeconds'] = laps['LapTime'].dt.total_seconds()
     
-    # Sort by Driver and LapNumber to ensure cumulative sum is correct
     laps = laps.sort_values(by=['Driver', 'LapNumber'])
     laps['CumulativeTime'] = laps.groupby('Driver')['LapTimeSeconds'].cumsum()
     
-    # Find leader cumulative time per lap
-    # First, get the maximum lap number reached by the leader (or anyone)
     max_lap = int(laps['LapNumber'].max())
-    
     processed_laps = []
     
-    print(f"Processing {max_lap} laps...")
+    print(f"Processing {max_lap} laps for {location}...")
     for lap_num in range(1, max_lap + 1):
         lap_snapshot = laps[laps['LapNumber'] == lap_num].copy()
         if lap_snapshot.empty:
             continue
             
-        # Determine the leader of this specific lap
-        # The leader is the one with the smallest CumulativeTime who is on this lap
-        # Note: In real F1, some might be lapped. We only care about those on lap_num.
         leader_time = lap_snapshot['CumulativeTime'].min()
         
         for _, row in lap_snapshot.iterrows():
-            # Mapping status
             status = get_track_status(row['TrackStatus'])
-            
-            # Pit stop detection
-            # pit_stop = not pd.isna(row['PitOutTime'])
             pit_stop = pd.notna(row['PitInTime']) or pd.notna(row['PitOutTime'])
-            
-            # Tyre life
             tire_age = int(row['TyreLife']) if not pd.isna(row['TyreLife']) else 0
-            
-            # Gap ahead calculation
             gap_ahead = round(row['CumulativeTime'] - leader_time, 3)
             
             processed_laps.append({
@@ -83,16 +62,16 @@ def load_real_race_data():
                 'track_status': status
             })
             
-    # Create DataFrame and export
     df = pd.DataFrame(processed_laps)
-    
-    # Sort by lap and position for consistency
     df = df.sort_values(by=['lap_number', 'position'])
     
-    output_path = "data/real_race_silverstone_2023.csv"
+    output_path = Path("data") / output_filename
     df.to_csv(output_path, index=False)
     print(f"Successfully generated {output_path}")
-    return output_path
 
 if __name__ == "__main__":
-    load_real_race_data()
+    if len(sys.argv) == 4:
+        extract_race(int(sys.argv[1]), sys.argv[2], sys.argv[3])
+    else:
+        # Default fallback for Silverstone
+        extract_race(2023, "Silverstone", "real_race_silverstone_2023.csv")

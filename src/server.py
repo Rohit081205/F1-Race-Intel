@@ -17,6 +17,7 @@ from src.race_state import RaceState
 from src.event_detection import EventDetection
 from src.hype_index import HypeIndex
 from src.commentary_engine import CommentaryEngine
+from src.race_registry import RACE_REGISTRY
 
 # --- Pydantic Models ---
 
@@ -42,6 +43,9 @@ class RaceStateResponse(BaseModel):
     drivers: List[DriverState]
     events: List[RaceEvent]
     commentary: str
+
+class RaceStartRequest(BaseModel):
+    race_id: str = "silverstone_2023"
 
 # --- Application Setup ---
 
@@ -113,26 +117,38 @@ def build_response(lap_data: Dict, race_state: RaceState, events: List[Dict], hy
 # --- API Endpoints ---
 
 @app.post("/api/race/start", response_model=RaceStateResponse)
-async def start_race(csv_path: str = "data/real_race_silverstone_2023.csv"):
+async def start_race(request: Optional[RaceStartRequest] = None):
     """
     Initialize and start a new race simulation.
     """
+    race_id = request.race_id if request else "silverstone_2023"
+    
+    if race_id not in RACE_REGISTRY:
+        raise HTTPException(status_code=400, detail=f"Invalid race_id: {race_id}")
+    
+    csv_path = RACE_REGISTRY[race_id]["csv"]
     if not Path(csv_path).exists():
         raise HTTPException(status_code=404, detail=f"CSV file not found at {csv_path}")
         
+    # Full re-initialization to purge all previous state
     race.replay = RaceReplay(csv_path)
     race.state = RaceState(total_laps=race.replay.get_total_laps())
+    race.event_detector = EventDetection()
+    race.hype_calculator = HypeIndex()
+    race.commentary_engine = CommentaryEngine()
     
     # Auto-start at Lap 1
     lap_data = race.replay.next_lap()
-    race.state.update_state(lap_data)
+    if lap_data:
+        race.state.update_state(lap_data)
+        events = race.event_detector.detect_events(race.state)
+        hype = race.hype_calculator.calculate(race.state, events)
+        commentary = race.commentary_engine.generate_commentary(race.state, events, hype)
+        
+        race.current_response = build_response(lap_data, race.state, events, hype, commentary)
+        return race.current_response
     
-    events = race.event_detector.detect_events(race.state)
-    hype = race.hype_calculator.calculate(race.state, events)
-    commentary = race.commentary_engine.generate_commentary(race.state, events, hype)
-    
-    race.current_response = build_response(lap_data, race.state, events, hype, commentary)
-    return race.current_response
+    raise HTTPException(status_code=500, detail="Failed to initialize first lap data.")
 
 @app.post("/api/race/next-lap", response_model=RaceStateResponse)
 async def next_lap():

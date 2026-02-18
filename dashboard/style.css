@@ -99,6 +99,32 @@ body {
     letter-spacing: 1px;
 }
 
+.race-dropdown {
+    padding: 0.8rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 4px;
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.race-dropdown:focus {
+    border-color: var(--f1-red);
+    box-shadow: 0 0 10px rgba(225, 6, 0, 0.2);
+}
+
+.race-dropdown option {
+    background: var(--bg-dark);
+    color: var(--text-main);
+}
+
 .btn-primary {
     background-color: var(--f1-red);
     color: white;

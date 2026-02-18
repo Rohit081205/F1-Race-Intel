@@ -25,31 +25,55 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Functions ---
 
     async function startRace() {
+        const raceId = document.getElementById('raceSelector').value;
+        resetDashboard();
         try {
-            const response = await fetch('/api/race/start', { method: 'POST' });
+            const response = await fetch('/api/race/start', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ race_id: raceId })
+            });
             const data = await response.json();
-            
+
             updateUI(data);
             startBtn.disabled = true;
             nextLapBtn.disabled = false;
-            
-            addCommentary("Race started. All systems green.");
         } catch (error) {
             console.error('Error starting race:', error);
             addCommentary("Error connecting to race server.");
         }
     }
 
+    function resetDashboard() {
+        // Reset labels
+        lapCounter.textContent = "0/0";
+        racePhase.textContent = "INITIALIZING";
+
+        // Reset Hype
+        hypeValue.textContent = "0";
+        hypeFill.style.width = "0%";
+
+        // Clear tables and feeds
+        driverBody.innerHTML = '';
+        commentaryScroll.innerHTML = '';
+        eventLog.innerHTML = '';
+
+        // Reset Chart
+        chart.data.labels = [];
+        chart.data.datasets = [];
+        chart.update();
+    }
+
     async function fetchNextLap() {
         try {
             const response = await fetch('/api/race/next-lap', { method: 'POST' });
-            
+
             if (response.status === 204) {
                 addCommentary("Chequered flag! The race simulation has concluded.");
                 nextLapBtn.disabled = true;
                 return;
             }
-            
+
             const data = await response.json();
             updateUI(data);
         } catch (error) {
@@ -61,11 +85,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // 1. Header Info
         lapCounter.textContent = `${data.lap_number}/${data.total_laps}`;
         racePhase.textContent = data.race_phase.toUpperCase();
-        
+
         // 2. Hype Index
         hypeValue.textContent = Math.round(data.hype_index);
         hypeFill.style.width = `${data.hype_index}%`;
-        
+
         // Color coding hype value
         if (data.hype_index > 70) hypeValue.style.color = '#ff4d4d';
         else if (data.hype_index > 40) hypeValue.style.color = '#ffcc00';
@@ -176,7 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
                 chart.data.datasets.push(dataset);
             }
-            
+
             dataset.data.push(d.gap_ahead);
             if (dataset.data.length > maxChartPoints) dataset.data.shift();
         });
